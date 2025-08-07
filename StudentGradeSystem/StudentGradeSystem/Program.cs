@@ -1,10 +1,12 @@
 ﻿class StudentGradeSystem
 {
+    static int studentCounter = 0; // Counter to generate unique student IDs
     static void Main(string[] args)
     {
         Console.WriteLine("Student Grade System");
         Console.WriteLine("Student details");
         AddStudentName();
+        AddStudentId();
     }
 
     static void AddStudentName()
@@ -38,5 +40,13 @@
             break;
         }
         Console.WriteLine($"Student name '{name}' has been added successfully.");
+    }
+
+    static void AddStudentId()
+    {
+        studentCounter++;
+        string yearPart = DateTime.Now.Year.ToString().Substring(2, 2); // Get last two digits of the current year
+        string id = $"{yearPart}{studentCounter.ToString("D4")}"; // Format student ID as YYNNNNN
+        Console.WriteLine($"Assigned Student ID: {id}");
     }
 }
