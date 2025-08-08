@@ -1,7 +1,10 @@
 ﻿class StudentGradeSystem
 {
+    static string studentName = "";
+    static string studentId = "";
     static int studentCounter = 0; // Counter to generate unique student IDs
     static readonly string[] subjects = ["Maths", "English", "Physics", "Chemistry", "History", "Geography", "IT", "Arts", "PE", "Accounting"];
+
     static void Main(string[] args)
     {
         Console.WriteLine("Student Grade System");
@@ -13,26 +16,25 @@
 
     static void AddStudentName()
     {
-        string name;
         while (true)
         {
             Console.Write("Enter student name: ");
-            name = (Console.ReadLine()?.Trim()) ?? string.Empty;
+            studentName = (Console.ReadLine()?.Trim()) ?? string.Empty;
 
             // Data integrity: Check for empty or too long input
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(studentName))
             {
                 Console.WriteLine("Name cannot be empty. Please try again.");
                 continue;
             }
-            if (name.Length > 50)
+            if (studentName.Length > 50)
             {
                 Console.WriteLine("Name is too long. Maximum 50 characters allowed.");
                 continue;
             }
 
             // Security: Allow only letters, spaces, hyphens, and apostrophes
-            if (!System.Text.RegularExpressions.Regex.IsMatch(name, @"^[a-zA-Z\s\-']+$"))
+            if (!System.Text.RegularExpressions.Regex.IsMatch(studentName, @"^[a-zA-Z\s\-']+$"))
             {
                 Console.WriteLine("Name contains invalid charaters. Only letters, spaces, hyphens, and apostrophes are allowed.");
                 continue;
@@ -41,15 +43,15 @@
             // Name is valid
             break;
         }
-        Console.WriteLine($"Student name '{name}' has been added successfully.");
+        Console.WriteLine($"Student name '{studentName}' has been added successfully.");
     }
 
     static void AddStudentId()
     {
         studentCounter++;
         string yearPart = DateTime.Now.Year.ToString().Substring(2, 2); // Get last two digits of the current year
-        string id = $"{yearPart}{studentCounter.ToString("D4")}"; // Format student ID as YYNNNNN
-        Console.WriteLine($"Assigned Student ID: {id}");
+        studentId  = $"{yearPart}{studentCounter.ToString("D4")}"; // Format student ID as YYNNNNN
+        Console.WriteLine($"Assigned Student ID: {studentId}");
     }
 
     static void EnterSubjectsAndMarks()
@@ -59,11 +61,11 @@
 
         bool addingSubjects = true;
         Console.WriteLine("\nAvailable subjects:");
-            for (int i = 0; i < subjects.Length; i++)
-            {
-                if (!selectedSubjects.Contains(subjects[i]))
-                    Console.WriteLine($"{i + 1}. {subjects[i]}");
-            }
+        for (int i = 0; i < subjects.Length; i++)
+        {
+            if (!selectedSubjects.Contains(subjects[i]))
+                Console.WriteLine($"{i + 1}. {subjects[i]}");
+        }
         while (addingSubjects)
         {
 
@@ -125,6 +127,31 @@
             string toRemove = selectedSubjects[removeChoice - 1];
             selectedSubjects.RemoveAt(removeChoice - 1);
             marksDict.Remove(toRemove);
+        }
+
+        // Calculate average marks
+        if (selectedSubjects.Count > 0)
+        {
+            double averageMarks = marksDict.Values.Average();
+            string averageGrade = GetGrade((int)Math.Round(averageMarks));
+
+            // Display report
+            Console.WriteLine("\n------------ Student Report ------------");
+            Console.WriteLine($"Student Name : {studentName}");
+            Console.WriteLine($"Student ID   : {studentId}");
+            Console.WriteLine("Subjects - Marks - Grade");
+            foreach (var subj in selectedSubjects)
+            {
+                int mark = marksDict[subj];
+                string grade = GetGrade(mark);
+                Console.WriteLine($"{subj} - {mark} - {grade}");
+            }
+            Console.WriteLine($"Average Marks: {averageMarks:F2}");
+            Console.WriteLine($"Average Grade: {averageGrade}");
+        }
+        else
+        {
+            Console.WriteLine("No subjects entered.");
         }
 
     }
